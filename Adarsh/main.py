@@ -32,7 +32,7 @@ async def start(bot, m: Message):
     )
 
     progress_texts = [
-        "Initializing Uploader bot... 🤖\n\nProgress: [⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️] 0%\n\n",
+        "Initializing Your bot... 🤖\n\nProgress: [⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️] 0%\n\n",
         "Loading features... ⏳\n\nProgress: [🟥🟥🟥⬜️⬜️⬜️⬜️⬜️⬜️⬜️] 25%\n\n",
         "This may take a moment, sit back and relax! 😊\n\nProgress: [🟧🟧🟧🟧🟧⬜️⬜️⬜️⬜️⬜️] 50%\n\n",
         "Checking subscription status... 🔍\n\nProgress: [🟨🟨🟨🟨🟨🟨🟨🟨⬜️⬜️] 75%\n\n",
