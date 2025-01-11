@@ -38,11 +38,10 @@ async def ping_pong(bot, m: Message):
     await response.edit_text(Data.PING.format(ping_time))
 
 @bot.on_message(filters.command("AddSudo", prefixes=["/", "."]) & filters.reply)
-async def addsudo_list(client, message):
-    if message.from_user.id in Config.VIP_USER:
-        xuser = message.reply_to_message.from_user.id
-        x.add(xuser)  
-        message.reply_text(f"User {xuser} has been added to sudo users.")
+async def addsudo_list(client, message)
+      xuser = message.reply_to_message.from_user.id
+      x.add(xuser)  
+      message.reply_text(f"User {xuser} has been added to sudo users.")
         
 @bot.on_message(filters.command("delsudo", prefixes=["/", "."]) & filters.reply)
 async def remove_vip(client, message):
@@ -57,6 +56,21 @@ async def remove_vip(client, message):
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot, m: Message):
     if m.from_user.id in Config.VIP_USERS:
+        reply = m.reply_to_message
+        if len(m.command) == 1 and not reply:
+            vip_mentions = []
+            for user_id in x:
+                try:
+                    user = await bot.get_users(user_id)
+                    vip_mentions.append(user.mention)
+                except Exception:
+                    vip_mentions.append(f"`{user_id}`")
+            vip_list = "\n".join(vip_mentions) or "No VIP users found."
+            await m.reply_text(vip_list)
+            
+
+@bot.on_message(filters.command("vipx"))
+async def vip_handler(bot, m: Message):
         reply = m.reply_to_message
         if len(m.command) == 1 and not reply:
             vip_mentions = []
