@@ -49,7 +49,7 @@ async def remove_vip(bot, m: Message):
 
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot, m: Message):
-    if m.from_user.id in Config.VIP_USERS:
+    if m.from_user.id in x:
         vip_mentions = []
         for user_id in x:
             try:
