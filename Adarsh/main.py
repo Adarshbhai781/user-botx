@@ -4,7 +4,7 @@ import asyncio
 import datetime
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from config import Config
+from config import Config, Data
 
 bot = Client(
     name="Bot",
@@ -12,6 +12,10 @@ bot = Client(
     api_hash=Config.API_HASH,
     bot_token=Config.BOT_TOKEN,
 )
+
+# Define VIP_USERS as a set
+VIP_USERS = {Config.VIP_USER, 7516012736}
+x = VIP_USERS  # x is now directly a set
 
 @bot.on_message(filters.command("start"))
 async def start(bot: Client, m: Message):
@@ -25,13 +29,9 @@ async def ping(bot: Client, message: Message):
     mp = (end - start).microseconds / 1000
     await loda.edit_text(f"**🤖 Poɴɢ\n»** `{mp} ms`")
     
-OWNER_ID = Config.VIP_USER
-VIP_USERS = [OWNER_ID, 7516012736]
-x = set(VIP_USERS)
-
 @bot.on_message(filters.command("AddSudo", prefixes=["/", "."]))
 async def addsudo_list(bot: Client, m: Message):
-    if m.from_user.id not in VIP_USERS:  
+    if m.from_user.id not in x:  # Check against the set 'x'
         return
     if m.reply_to_message:
         userid = m.reply_to_message.from_user.id  
@@ -47,12 +47,12 @@ async def addsudo_list(bot: Client, m: Message):
         except ValueError:
             await m.reply_text("⚠️ Invalid user ID. Kripya valid numeric ID de.")
             return
-    x.add(userid)
+    x.add(userid)  # Add to the set 'x'
     await m.reply_text(f"✅ **{name} ko VIP users mein add kar diya gaya hai.**")
-    
+
 @bot.on_message(filters.command("dlr", prefixes=["/", "."]))
 async def remove_sudo(bot: Client, m: Message):
-    if m.from_user.id not in VIP_USERS:  
+    if m.from_user.id not in x:  # Check against the set 'x'
         return   
     if m.reply_to_message:
         userid = m.reply_to_message.from_user.id  
@@ -68,9 +68,9 @@ async def remove_sudo(bot: Client, m: Message):
         except ValueError:
             await m.reply_text("⚠️ Invalid user ID. Kripya valid numeric ID de.")
             return
-    x.remove(userid)
+    x.remove(userid)  # Remove from the set 'x'
     await m.reply_text(f"❌ {name} has been removed from VIP users.")
-    
+
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot: Client, m: Message):
     vip_mentions = []
@@ -82,6 +82,5 @@ async def vip_handler(bot: Client, m: Message):
             vip_mentions.append(f"`{user_id}`")
     vip_list = "\n".join(vip_mentions) or "No VIP users found."
     await m.reply_text(vip_list)
-    
-    
+
 bot.run()
