@@ -1,0 +1,36 @@
+{
+    "name": "making First bot",
+    "logo": "https://te.legra.ph/file/ceee32999a8250a1f7ebb.png",
+    "description": "An Advanced user Bot For Telegram ID.",
+    "keywords": ["Master", "adarsh", "userbot"],
+    "repository": "https://github.com/GeniusBoi/Genius-Userbot",
+    "stack": "container",
+    "env": {
+        "API_ID": {
+            "description": "Your App ID",
+            "value": "12380656",
+            "required": true
+        },
+        "API_HASH": {
+            "description": "Your App Hash",
+            "value": "d927c13beaaf5110f25c505b7c071273",
+            "required": true
+        },
+        "BOT_TOKEN": {
+            "description": "Your Bot Token",
+            "required": true
+        },
+        "VIP_USER": {
+            "description": "Your User Id",
+            "required": true
+        }
+    },
+    "buildpacks": [
+    {
+      "url": "heroku/python"
+    },
+    {
+      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+    }
+  ]
+}
