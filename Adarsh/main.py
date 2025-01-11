@@ -17,7 +17,8 @@ class Data:
     PING = "🏓 Pong! Bot is alive.\n⏱ Response Time: `{0}ms`"
     VIP_ADDED = "✅ **{0} has been added to VIP users.**"
     VIP_REMOVED = "❌ **{0} has been removed from VIP users.**"
-VIP_USERS=[]
+
+VIP_USERS = []
 x = set(VIP_USERS)
 
 @bot.on_message(filters.command("start"))
@@ -25,7 +26,7 @@ async def start(bot, m: Message):
     await m.reply_text(Data.START.format(m.from_user.mention))
 
 @bot.on_message(filters.command("ping"))
-async def ping_pong(bot, m: Message)
+async def ping_pong(bot, m: Message):
     start = asyncio.get_event_loop().time()
     response = await m.reply_text("🏓 Pinging...")
     end = asyncio.get_event_loop().time()
@@ -36,16 +37,16 @@ async def ping_pong(bot, m: Message)
 async def addsudo_list(bot, m: Message):
     xuser = m.reply_to_message.from_user.id
     x.add(xuser)
-    await m.reply_text(Data.VIP_ADDED.format(xuser))
+    await m.reply_text(Data.VIP_ADDED.format(m.reply_to_message.from_user.mention))
 
 @bot.on_message(filters.command("delsudo", prefixes=["/", "."]) & filters.reply)
 async def remove_vip(bot, m: Message):
     xuser = m.reply_to_message.from_user.id
     if xuser in x:
         x.remove(xuser)
-        await m.reply_text(Data.VIP_REMOVED.format(xuser))
+        await m.reply_text(Data.VIP_REMOVED.format(m.reply_to_message.from_user.mention))
     else:
-        pass
+        await m.reply_text("User is not in VIP list.")
 
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot, m: Message):
@@ -76,7 +77,7 @@ async def vipx_handler(bot, m: Message):
 
 @bot.on_message(filters.command("stop"))
 async def stop_handler(bot, m: Message):
-    if m.from_user.id not in Config.VIP_USERS:
+    if m.from_user.id not in VIP_USERS:
         await m.reply_text("Oopss! You are not a Team member.")
         return
     await m.reply_text("🚦**STOPPED**🚦")
