@@ -17,15 +17,15 @@ class Data:
     PING = "🏓 Pong! Bot is alive.\n⏱ Response Time: `{0}ms`"
     VIP_ADDED = "✅ **{0} has been added to VIP users.**"
     VIP_REMOVED = "❌ **{0} has been removed from VIP users.**"
-
-x = set(Config.VIP_USERS)
+VIP_USERS=[]
+x = set(VIP_USERS)
 
 @bot.on_message(filters.command("start"))
 async def start(bot, m: Message):
     await m.reply_text(Data.START.format(m.from_user.mention))
 
 @bot.on_message(filters.command("ping"))
-async def ping_pong(bot, m: Message):
+async def ping_pong(bot, m: Message)
     start = asyncio.get_event_loop().time()
     response = await m.reply_text("🏓 Pinging...")
     end = asyncio.get_event_loop().time()
@@ -45,11 +45,11 @@ async def remove_vip(bot, m: Message):
         x.remove(xuser)
         await m.reply_text(Data.VIP_REMOVED.format(xuser))
     else:
-        await m.reply_text(f"User tg://openmessage?user_id={xuser} Removed successfully ")
+        pass
 
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot, m: Message):
-    if m.from_user.id in x:
+    if m.from_user.id in VIP_USERS:
         vip_mentions = []
         for user_id in x:
             try:
