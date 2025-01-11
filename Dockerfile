@@ -13,4 +13,6 @@ RUN npm i -g npm
 COPY . /adarsh/
 WORKDIR /adarsh/
 RUN pip3 install -U -r Installer
-CMD python3 -m Adarsh
+CMD python3 -m Adarsh.main
+
+
