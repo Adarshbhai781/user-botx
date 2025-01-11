@@ -20,7 +20,7 @@
             "description": "Your Bot Token",
             "required": true
         },
-        "VIP_USER": {
+        "AUTH_USERS": {
             "description": "Your User Id",
             "required": true
         }
