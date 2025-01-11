@@ -16,8 +16,7 @@ class Data:
     START = "🌟 Welcome Mere Bhai {0}! 🌟\n\n"
     PING = "🏓 Pong! Bot is alive.\n⏱ Response Time: `{0}ms`"
     VIP_ADDED = "✅ **{0} has been added to VIP users.**"
-    VIP_REMOVED = "✅ **{0} has been removed from VIP users.**"
-    VIP_LIST = "🌟 **VIP Users:**\n\n{0}"
+ 
 
 VIP_USERS = set(Config.VIP_USERS)
 
