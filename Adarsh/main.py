@@ -4,7 +4,6 @@ import asyncio
 from pyrogram import Client as Bot, filters
 from pyrogram.types import Message
 from config import Config
-from config import *
 
 bot = Bot(
     name="Bot",
@@ -19,13 +18,11 @@ class Data:
     VIP_ADDED = "✅ **{0} has been added to VIP users.**"
     VIP_REMOVED = "❌ **{0} has been removed from VIP users.**"
 
-x = set(Config.VIP_USERS)  
+x = set(Config.VIP_USERS)
 
 @bot.on_message(filters.command("start"))
 async def start(bot, m: Message):
-    user = await bot.get_me()
-    mention = user.mention
-    start_message = await bot.send_message(
+    await bot.send_message(
         m.chat.id, Data.START.format(m.from_user.mention)
     )
 
@@ -38,61 +35,55 @@ async def ping_pong(bot, m: Message):
     await response.edit_text(Data.PING.format(ping_time))
 
 @bot.on_message(filters.command("AddSudo", prefixes=["/", "."]) & filters.reply)
-async def addsudo_list(client, message)
-      xuser = message.reply_to_message.from_user.id
-      x.add(xuser)  
-      message.reply_text(f"User {xuser} has been added to sudo users.")
-        
+async def addsudo_list(client, message):
+    xuser = message.reply_to_message.from_user.id
+    x.add(xuser)
+    await message.reply_text(f"User {xuser} has been added to sudo users.")
+
 @bot.on_message(filters.command("delsudo", prefixes=["/", "."]) & filters.reply)
 async def remove_vip(client, message):
-    if message.from_user.id in Config.VIP_USERS:
-        xuser = message.reply_to_message.from_user.id
-        if xuser in x:
-            x.remove(xuser) 
-            message.reply_text(f"User {xuser} has been removed from VIP users.")
-        else:
-            message.reply_text(f"User {xuser} is not in the VIP list.")
+    xuser = message.reply_to_message.from_user.id
+    if xuser in x:
+        x.remove(xuser)
+        await message.reply_text(f"User {xuser} has been removed from VIP users.")
+    else:
+        await message.reply_text(f"User {xuser} is not in the VIP list.")
 
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot, m: Message):
     if m.from_user.id in Config.VIP_USERS:
-        reply = m.reply_to_message
-        if len(m.command) == 1 and not reply:
-            vip_mentions = []
-            for user_id in x:
-                try:
-                    user = await bot.get_users(user_id)
-                    vip_mentions.append(user.mention)
-                except Exception:
-                    vip_mentions.append(f"`{user_id}`")
-            vip_list = "\n".join(vip_mentions) or "No VIP users found."
-            await m.reply_text(vip_list)
-            
+        vip_mentions = []
+        for user_id in x:
+            try:
+                user = await bot.get_users(user_id)
+                vip_mentions.append(user.mention)
+            except Exception:
+                vip_mentions.append(f"`{user_id}`")
+        vip_list = "\n".join(vip_mentions) or "No VIP users found."
+        await m.reply_text(vip_list)
 
 @bot.on_message(filters.command("vipx"))
-async def vip_handler(bot, m: Message):
-        reply = m.reply_to_message
-        if len(m.command) == 1 and not reply:
-            vip_mentions = []
-            for user_id in x:
-                try:
-                    user = await bot.get_users(user_id)
-                    vip_mentions.append(user.mention)
-                except Exception:
-                    vip_mentions.append(f"`{user_id}`")
-            vip_list = "\n".join(vip_mentions) or "No VIP users found."
-            await m.reply_text(vip_list)
-
+async def vipx_handler(bot, m: Message):
+    vip_mentions = []
+    for user_id in x:
+        try:
+            user = await bot.get_users(user_id)
+            vip_mentions.append(user.mention)
+        except Exception:
+            vip_mentions.append(f"`{user_id}`")
+    vip_list = "\n".join(vip_mentions) or "No VIP users found."
+    await m.reply_text(vip_list)
 
 @bot.on_message(filters.command("stop"))
-async def restart_handler(bot, m: Message):
-    if m.chat.id not in Config.VIP_USERS:
+async def stop_handler(bot, m: Message):
+    if m.from_user.id not in Config.VIP_USERS:
         await bot.send_message(
             m.chat.id,
-            f"Oopss! You are not a Team member.",
+            "Oopss! You are not a Team member.",
         )
         return
     await m.reply_text("🚦**STOPPED**🚦", True)
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 bot.run()
+print("start")
