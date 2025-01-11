@@ -18,51 +18,59 @@ class Data:
     VIP_ADDED = "✅ **{0} has been added to VIP users.**"
     VIP_REMOVED = "❌ **{0} has been removed from VIP users.**"
     NOT_VIP = "❌ You are not authorized to use this command."
+    OWNER_PROTECTED = "❌ You cannot remove the owner!"
 
-VIP_USERS = [7190948267, 987654321]  # Replace with the actual VIP user IDs
+OWNER_ID = 7190948267  # Replace with the actual owner ID
+VIP_USERS = [OWNER_ID, 987654321]  # Add other VIP user IDs as needed
 x = set(VIP_USERS)
 
-@bot.on_message(filters.command("start"))
+# Decorator to restrict commands to the owner and VIP users
+def VIP():
+    async def decorator(_, __, m: Message):
+        if m.from_user.id not in VIP_USERS:
+            await m.reply_text(Data.NOT_VIP)
+            return False
+        return True
+    return filters.create(decorator)
+
+@bot.on_message(filters.command("start") & VIP())
 async def start(bot, m: Message):
     await m.reply_text(Data.START.format(m.from_user.mention))
 
-@bot.on_message(filters.command("ping"))
+@bot.on_message(filters.command("ping") & VIP())
 async def ping_pong(bot, m: Message):
-    if m.from_user.id not in VIP_USERS:
-        await m.reply_text(Data.NOT_VIP)
-        return
-    start = asyncio.get_event_loop().time()
+    start = asyncio.get_running_loop().time()
     response = await m.reply_text("🏓 Pinging...")
-    end = asyncio.get_event_loop().time()
+    end = asyncio.get_running_loop().time()
     ping_time = round((end - start) * 1000, 2)
     await response.edit_text(Data.PING.format(ping_time))
 
-@bot.on_message(filters.command("AddSudo", prefixes=["/", "."]) & filters.reply)
+@bot.on_message(filters.command("AddSudo", prefixes=["/", "."]) & VIP() & filters.reply)
 async def addsudo_list(bot, m: Message):
-    if m.from_user.id not in VIP_USERS:
-        await m.reply_text(Data.NOT_VIP)
+    if not m.reply_to_message:
+        await m.reply_text("❌ Please reply to a user to add them as a VIP.")
         return
     xuser = m.reply_to_message.from_user.id
     x.add(xuser)
     await m.reply_text(Data.VIP_ADDED.format(m.reply_to_message.from_user.mention))
 
-@bot.on_message(filters.command("delsudo", prefixes=["/", "."]) & filters.reply)
+@bot.on_message(filters.command("delsudo", prefixes=["/", "."]) & VIP() & filters.reply)
 async def remove_vip(bot, m: Message):
-    if m.from_user.id not in VIP_USERS:
-        await m.reply_text(Data.NOT_VIP)
+    if not m.reply_to_message:
+        await m.reply_text("❌ Please reply to a user to remove them from VIP.")
         return
     xuser = m.reply_to_message.from_user.id
+    if xuser == OWNER_ID:
+        await m.reply_text(Data.OWNER_PROTECTED)
+        return
     if xuser in x:
         x.remove(xuser)
         await m.reply_text(Data.VIP_REMOVED.format(m.reply_to_message.from_user.mention))
     else:
         await m.reply_text("User is not in VIP list.")
 
-@bot.on_message(filters.command("vip"))
+@bot.on_message(filters.command("vip") & VIP())
 async def vip_handler(bot, m: Message):
-    if m.from_user.id not in VIP_USERS:
-        await m.reply_text(Data.NOT_VIP)
-        return
     vip_mentions = []
     for user_id in x:
         try:
@@ -73,11 +81,8 @@ async def vip_handler(bot, m: Message):
     vip_list = "\n".join(vip_mentions) or "No VIP users found."
     await m.reply_text(vip_list)
 
-@bot.on_message(filters.command("vipx"))
+@bot.on_message(filters.command("vipx") & VIP())
 async def vipx_handler(bot, m: Message):
-    if m.from_user.id not in VIP_USERS:
-        await m.reply_text(Data.NOT_VIP)
-        return
     vip_mentions = []
     for user_id in x:
         try:
@@ -88,11 +93,8 @@ async def vipx_handler(bot, m: Message):
     vip_list = "\n".join(vip_mentions) or "No VIP users found."
     await m.reply_text(vip_list)
 
-@bot.on_message(filters.command("stop"))
+@bot.on_message(filters.command("stop") & VIP())
 async def stop_handler(bot, m: Message):
-    if m.from_user.id not in VIP_USERS:
-        await m.reply_text(Data.NOT_VIP)
-        return
     await m.reply_text("🚦**STOPPED**🚦")
     os.execl(sys.executable, sys.executable, *sys.argv)
 
