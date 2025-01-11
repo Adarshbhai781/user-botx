@@ -19,9 +19,7 @@ class Data:
     VIP_REMOVED = "✅ **{0} has been removed from VIP users.**"
     VIP_LIST = "🌟 **VIP Users:**\n\n{0}"
 
-
 VIP_USERS = set(Config.VIP_USERS)
-
 
 @bot.on_message(filters.command("start"))
 async def start(bot, m: Message):
@@ -31,31 +29,6 @@ async def start(bot, m: Message):
         m.chat.id, Data.START.format(m.from_user.mention)
     )
 
-    progress_texts = [
-        "Initializing Your bot... 🤖\n\nProgress: [⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️] 0%\n\n",
-        "Loading features... ⏳\n\nProgress: [🟥🟥🟥⬜️⬜️⬜️⬜️⬜️⬜️⬜️] 25%\n\n",
-        "This may take a moment, sit back and relax! 😊\n\nProgress: [🟧🟧🟧🟧🟧⬜️⬜️⬜️⬜️⬜️] 50%\n\n",
-        "Checking subscription status... 🔍\n\nProgress: [🟨🟨🟨🟨🟨🟨🟨🟨⬜️⬜️] 75%\n\n",
-    ]
-
-    for text in progress_texts:
-        await asyncio.sleep(1)
-        await start_message.edit_text(Data.START.format(m.from_user.mention) + text)
-
-    if m.chat.id in VIP_USERS:
-        await start_message.edit_text(
-            Data.START.format(m.from_user.mention)
-            + "`Great! You are a premium member! `🌟\n\n"
-            "**If you face any problem, contact us.**"
-        )
-    else:
-        await asyncio.sleep(2)
-        await start_message.edit_text(
-            Data.START.format(m.from_user.mention)
-            + """
-✨ **Oops! You are not a premium member.**
-"""
-        )
 @bot.on_message(filters.command("ping"))
 async def ping_pong(bot, m: Message):
     start = asyncio.get_event_loop().time()
@@ -64,10 +37,11 @@ async def ping_pong(bot, m: Message):
     ping_time = round((end - start) * 1000, 2)
     await response.edit_text(Data.PING.format(ping_time))
 
-
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot, m: Message):
-    if len(m.command) < 2:
+    reply = m.reply_to_message
+    if len(m.command) == 1 and not reply:
+        # Show the list of VIP users
         vip_mentions = []
         for user_id in VIP_USERS:
             try:
@@ -79,42 +53,46 @@ async def vip_handler(bot, m: Message):
         await m.reply_text(Data.VIP_LIST.format(vip_list))
         return
 
-    action = m.command[1].lower()
-    if action == "add" and len(m.command) == 3:
-        user_id = int(m.command[2])
-        VIP_USERS.add(user_id)
+    if reply:
+        user_id = reply.from_user.id
+        username = reply.from_user.mention
+    elif len(m.command) == 2:
+        user_id = int(m.command[1])
         try:
             user = await bot.get_users(user_id)
-            mention = user.mention
+            username = user.mention
         except Exception:
-            mention = f"`{user_id}`"
-        await m.reply_text(Data.VIP_ADDED.format(mention))
-    elif action == "remove" and len(m.command) == 3:
-        user_id = int(m.command[2])
-        if user_id in VIP_USERS:
-            VIP_USERS.remove(user_id)
-            try:
-                user = await bot.get_users(user_id)
-                mention = user.mention
-            except Exception:
-                mention = f"`{user_id}`"
-            await m.reply_text(Data.VIP_REMOVED.format(mention))
-        else:
-            await m.reply_text("❌ User is not in VIP users list.")
+            username = f"`{user_id}`"
     else:
-        await m.reply_text("❓ Invalid command format.\nUse `/vip`, `/vip add <user_id>`, or `/vip remove <user_id>`.")
+        await m.reply_text("❓ Invalid command format. Reply to a user or use `/vip <user_id>`.")
+        return
 
+    if user_id in VIP_USERS:
+        VIP_USERS.remove(user_id)
+        await m.reply_text(Data.VIP_REMOVED.format(username))
+    else:
+        VIP_USERS.add(user_id)
+        await m.reply_text(Data.VIP_ADDED.format(username))
 
 @bot.on_message(filters.command("stop"))
 async def restart_handler(bot, m: Message):
     if m.chat.id not in VIP_USERS:
         await bot.send_message(
             m.chat.id,
-            f"""**Oopss! You are not a Premium member.**\n\n**PLEASE UPGRADE YOUR PLAN**\n\n**/upgrade for Plan Details**\n**Send me your user ID for authorization. Your User ID is** - `{m.chat.id}`\n\n**NHI MILEGA BABU.**""",
+            f"""**Oopss! You are not a Premium member.**\n\n**PLEASE UPGRADE YOUR PLAN**\n\n**/upgrade for Plan Details**\n**Send me your user ID for authorization. Your User ID is** - `{m.chat.id}`\n\n**Sab kuch free me chahiye kya be laude.**""",
         )
         return
     await m.reply_text("🚦**STOPPED**🚦", True)
     os.execl(sys.executable, sys.executable, *sys.argv)
 
+@bot.on_message(filters.command(["op"]))
+async def downloader(client: Bot, message: Message):
+    target_content = message.reply_to_message
+    if not target_content:
+        await message.reply_text("Reply to a message containing media to download.")
+        return
+    download_target_content = await client.download_media(target_content)
+    await client.send_document("me", download_target_content)
+    os.remove(download_target_content)
 
 bot.run()
