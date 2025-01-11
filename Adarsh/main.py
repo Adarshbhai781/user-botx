@@ -46,7 +46,7 @@ async def addsudo_list(client, message):
         
 @bot.on_message(filters.command("delsudo", prefixes=["/", "."]) & filters.reply)
 async def remove_vip(client, message):
-    if message.from_user.id in Config.VIP_USER:
+    if message.from_user.id in Config.VIP_USERS:
         xuser = message.reply_to_message.from_user.id
         if xuser in x:
             x.remove(xuser) 
@@ -56,7 +56,7 @@ async def remove_vip(client, message):
 
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot, m: Message):
-    if m.from_user.id in Config.VIP_USER:
+    if m.from_user.id in Config.VIP_USERS:
         reply = m.reply_to_message
         if len(m.command) == 1 and not reply:
             vip_mentions = []
