@@ -45,7 +45,7 @@ async def remove_vip(bot, m: Message):
         x.remove(xuser)
         await m.reply_text(Data.VIP_REMOVED.format(xuser))
     else:
-        await m.reply_text(f"User {xuser} is not in the VIP list.")
+        await m.reply_text(f"User tg://openmessage?user_id={xuser} is not in the VIP list.")
 
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot, m: Message):
