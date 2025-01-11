@@ -4,7 +4,7 @@ import asyncio
 import datetime
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from config import Config, Data
+from config import Config
 
 bot = Client(
     name="Bot",
