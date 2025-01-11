@@ -1,11 +1,11 @@
 import os
 import sys
 import asyncio
-from pyrogram import Client as Bot, filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
 from config import Config
 
-bot = Bot(
+bot = Client(
     name="Bot",
     api_id=Config.API_ID,
     api_hash=Config.API_HASH,
@@ -22,9 +22,7 @@ x = set(Config.VIP_USERS)
 
 @bot.on_message(filters.command("start"))
 async def start(bot, m: Message):
-    await bot.send_message(
-        m.chat.id, Data.START.format(m.from_user.mention)
-    )
+    await m.reply_text(Data.START.format(m.from_user.mention))
 
 @bot.on_message(filters.command("ping"))
 async def ping_pong(bot, m: Message):
@@ -35,19 +33,19 @@ async def ping_pong(bot, m: Message):
     await response.edit_text(Data.PING.format(ping_time))
 
 @bot.on_message(filters.command("AddSudo", prefixes=["/", "."]) & filters.reply)
-async def addsudo_list(client, message):
-    xuser = message.reply_to_message.from_user.id
+async def addsudo_list(bot, m: Message):
+    xuser = m.reply_to_message.from_user.id
     x.add(xuser)
-    await message.reply_text(f"User {xuser} has been added to sudo users.")
+    await m.reply_text(Data.VIP_ADDED.format(xuser))
 
 @bot.on_message(filters.command("delsudo", prefixes=["/", "."]) & filters.reply)
-async def remove_vip(client, message):
-    xuser = message.reply_to_message.from_user.id
+async def remove_vip(bot, m: Message):
+    xuser = m.reply_to_message.from_user.id
     if xuser in x:
         x.remove(xuser)
-        await message.reply_text(f"User {xuser} has been removed from VIP users.")
+        await m.reply_text(Data.VIP_REMOVED.format(xuser))
     else:
-        await message.reply_text(f"User {xuser} is not in the VIP list.")
+        await m.reply_text(f"User {xuser} is not in the VIP list.")
 
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot, m: Message):
@@ -61,6 +59,8 @@ async def vip_handler(bot, m: Message):
                 vip_mentions.append(f"`{user_id}`")
         vip_list = "\n".join(vip_mentions) or "No VIP users found."
         await m.reply_text(vip_list)
+    else:
+        await m.reply_text("You are not authorized to use this command.")
 
 @bot.on_message(filters.command("vipx"))
 async def vipx_handler(bot, m: Message):
@@ -77,13 +77,9 @@ async def vipx_handler(bot, m: Message):
 @bot.on_message(filters.command("stop"))
 async def stop_handler(bot, m: Message):
     if m.from_user.id not in Config.VIP_USERS:
-        await bot.send_message(
-            m.chat.id,
-            "Oopss! You are not a Team member.",
-        )
+        await m.reply_text("Oopss! You are not a Team member.")
         return
-    await m.reply_text("🚦**STOPPED**🚦", True)
+    await m.reply_text("🚦**STOPPED**🚦")
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 bot.run()
-print("start")
