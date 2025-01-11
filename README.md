@@ -1,6 +1,6 @@
 <h1 align="center">Bot 1</h1>
 
-<p>This is my first latest uploader bot</p>
+<p>This is my first latest bot</p>
 
 <h3 align="center">
     ─ ᴅᴇᴩʟᴏʏ ᴏɴ ʜᴇʀᴏᴋᴜ ─
