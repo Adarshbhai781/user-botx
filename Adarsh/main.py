@@ -17,8 +17,9 @@ class Data:
     PING = "🏓 Pong! Bot is alive.\n⏱ Response Time: `{0}ms`"
     VIP_ADDED = "✅ **{0} has been added to VIP users.**"
     VIP_REMOVED = "❌ **{0} has been removed from VIP users.**"
+    NOT_VIP = "❌ You are not authorized to use this command."
 
-VIP_USERS = []
+VIP_USERS = [7190948267, 987654321]  # Replace with the actual VIP user IDs
 x = set(VIP_USERS)
 
 @bot.on_message(filters.command("start"))
@@ -27,6 +28,9 @@ async def start(bot, m: Message):
 
 @bot.on_message(filters.command("ping"))
 async def ping_pong(bot, m: Message):
+    if m.from_user.id not in VIP_USERS:
+        await m.reply_text(Data.NOT_VIP)
+        return
     start = asyncio.get_event_loop().time()
     response = await m.reply_text("🏓 Pinging...")
     end = asyncio.get_event_loop().time()
@@ -35,12 +39,18 @@ async def ping_pong(bot, m: Message):
 
 @bot.on_message(filters.command("AddSudo", prefixes=["/", "."]) & filters.reply)
 async def addsudo_list(bot, m: Message):
+    if m.from_user.id not in VIP_USERS:
+        await m.reply_text(Data.NOT_VIP)
+        return
     xuser = m.reply_to_message.from_user.id
     x.add(xuser)
     await m.reply_text(Data.VIP_ADDED.format(m.reply_to_message.from_user.mention))
 
 @bot.on_message(filters.command("delsudo", prefixes=["/", "."]) & filters.reply)
 async def remove_vip(bot, m: Message):
+    if m.from_user.id not in VIP_USERS:
+        await m.reply_text(Data.NOT_VIP)
+        return
     xuser = m.reply_to_message.from_user.id
     if xuser in x:
         x.remove(xuser)
@@ -50,21 +60,24 @@ async def remove_vip(bot, m: Message):
 
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot, m: Message):
-    if m.from_user.id in VIP_USERS:
-        vip_mentions = []
-        for user_id in x:
-            try:
-                user = await bot.get_users(user_id)
-                vip_mentions.append(user.mention)
-            except Exception:
-                vip_mentions.append(f"`{user_id}`")
-        vip_list = "\n".join(vip_mentions) or "No VIP users found."
-        await m.reply_text(vip_list)
-    else:
-        await m.reply_text("You are not authorized to use this command.")
+    if m.from_user.id not in VIP_USERS:
+        await m.reply_text(Data.NOT_VIP)
+        return
+    vip_mentions = []
+    for user_id in x:
+        try:
+            user = await bot.get_users(user_id)
+            vip_mentions.append(user.mention)
+        except Exception:
+            vip_mentions.append(f"`{user_id}`")
+    vip_list = "\n".join(vip_mentions) or "No VIP users found."
+    await m.reply_text(vip_list)
 
 @bot.on_message(filters.command("vipx"))
 async def vipx_handler(bot, m: Message):
+    if m.from_user.id not in VIP_USERS:
+        await m.reply_text(Data.NOT_VIP)
+        return
     vip_mentions = []
     for user_id in x:
         try:
@@ -78,7 +91,7 @@ async def vipx_handler(bot, m: Message):
 @bot.on_message(filters.command("stop"))
 async def stop_handler(bot, m: Message):
     if m.from_user.id not in VIP_USERS:
-        await m.reply_text("Oopss! You are not a Team member.")
+        await m.reply_text(Data.NOT_VIP)
         return
     await m.reply_text("🚦**STOPPED**🚦")
     os.execl(sys.executable, sys.executable, *sys.argv)
