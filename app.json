@@ -16,7 +16,7 @@
             "value": "d927c13beaaf5110f25c505b7c071273",
             "required": true
         },
-        "string_session": {
+        "BOT_TOKEN": {
             "description": "Your Bot Token",
             "required": true
         },
