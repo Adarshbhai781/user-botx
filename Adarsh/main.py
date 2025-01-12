@@ -13,9 +13,9 @@ bot = Client(
     bot_token=Config.BOT_TOKEN,
 )
 
-# Define VIP_USERS as a set
+# Define VIP_USERS as a list and convert to a set
 VIP_USERS = [Config.VIP_USER, 7516012736]
-x = set(VIP_USERS)#x is now directly a set
+x = set(VIP_USERS)  # x is now a set
 
 @bot.on_message(filters.command("start"))
 async def start(bot: Client, m: Message):
@@ -28,19 +28,19 @@ async def ping(bot: Client, message: Message):
     end = datetime.datetime.now()
     mp = (end - start).microseconds / 1000
     await loda.edit_text(f"**🤖 Poɴɢ\n»** `{mp} ms`")
-    
+
 @bot.on_message(filters.command("AddSudo", prefixes=["/", "."]))
 async def addsudo_list(bot: Client, m: Message):
     if m.reply_to_message:
-        userid = m.reply_to_message.from_user.id  
-        name = m.reply_to_message.from_user.mention  
+        userid = m.reply_to_message.from_user.id
+        name = m.reply_to_message.from_user.mention
     else:
         args = m.text.split()
         if len(args) < 2:
             await m.reply_text("⚠️ Kripya command ke baad valid user ID de.")
             return
         try:
-            userid = int(args[1])  
+            userid = int(args[1])
             name = f"<a href='tg://user?id={userid}'>User</a>"
         except ValueError:
             await m.reply_text("⚠️ Invalid user ID. Kripya valid numeric ID de.")
@@ -51,23 +51,26 @@ async def addsudo_list(bot: Client, m: Message):
 @bot.on_message(filters.command("dlr", prefixes=["/", "."]))
 async def remove_sudo(bot: Client, m: Message):
     if m.from_user.id not in x:  # Check against the set 'x'
-        return   
+        return
     if m.reply_to_message:
-        userid = m.reply_to_message.from_user.id  
-        name = m.reply_to_message.from_user.mention  
+        userid = m.reply_to_message.from_user.id
+        name = m.reply_to_message.from_user.mention
     else:
         args = m.text.split()
         if len(args) < 2:
             await m.reply_text("⚠️ Kripya command ke baad valid user ID de.")
             return
         try:
-            userid = int(args[1])  
+            userid = int(args[1])
             name = f"<a href='tg://user?id={userid}'>User</a>"
         except ValueError:
             await m.reply_text("⚠️ Invalid user ID. Kripya valid numeric ID de.")
             return
-    x.remove(userid)  # Remove from the set 'x'
-    await m.reply_text(f"❌ {name} has been removed from VIP users.")
+    if userid in x:  # Ensure the user is in the set before removing
+        x.remove(userid)  # Remove from the set 'x'
+        await m.reply_text(f"❌ {name} has been removed from VIP users.")
+    else:
+        await m.reply_text("❌ This user is not in the VIP list.")
 
 @bot.on_message(filters.command("vip"))
 async def vip_handler(bot: Client, m: Message):
