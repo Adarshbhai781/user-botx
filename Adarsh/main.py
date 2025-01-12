@@ -15,7 +15,7 @@ bot = Client(
 
 # Define VIP_USERS as a set
 VIP_USERS = (Config.VIP_USER, 7516012736)
-x = [VIP_USERS, 7516012736]# x is now directly a set
+x = set(VIP_USERS, 7516012736)#x is now directly a set
 
 @bot.on_message(filters.command("start"))
 async def start(bot: Client, m: Message):
