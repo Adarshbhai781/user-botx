@@ -31,8 +31,6 @@ async def ping(bot: Client, message: Message):
     
 @bot.on_message(filters.command("AddSudo", prefixes=["/", "."]))
 async def addsudo_list(bot: Client, m: Message):
-    if m.from_user.id not in x:  # Check against the set 'x'
-        return
     if m.reply_to_message:
         userid = m.reply_to_message.from_user.id  
         name = m.reply_to_message.from_user.mention  
