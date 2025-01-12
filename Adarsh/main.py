@@ -14,7 +14,7 @@ bot = Client(
 )
 
 # Define VIP_USERS as a set
-VIP_USERS = (Config.VIP_USER, 7516012736)
+VIP_USERS = [Config.VIP_USER, 7516012736]
 x = set(VIP_USERS)#x is now directly a set
 
 @bot.on_message(filters.command("start"))
